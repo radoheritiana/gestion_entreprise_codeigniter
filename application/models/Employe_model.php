@@ -31,21 +31,21 @@ class Employe_model extends CI_Model
 	public function findAll()
 	{
 		$result = $this->db->get($this->table);
-		return $result->row_array();
+		return $result->result_array();
 	}
 
-	public function findAllActive()
+	public function findAllActif()
 	{
 		$this->db->where("active", 1);
 		$result = $this->db->get($this->table);
-		return $result->row_array();
+		return $result->result_array();
 	}
 
-	public function findAllNotActive()
+	public function findAllNotActif()
 	{
 		$this->db->where("active", 0);
 		$result = $this->db->get($this->table);
-		return $result->row_array();
+		return $result->result_array();
 	}
 
 	public function findByMatricule($matricule){
@@ -60,7 +60,30 @@ class Employe_model extends CI_Model
 		return $result->row_array();
 	}
 
-	public function update(){
+	public function updateStatus($matricule, $active){
+		if ($active != 1 && $active != 0){
+			return false;
+		}
 
+		$this->db->set('active', $active);
+		$this->db->set('date_mise_a_jour', 'NOW()', false);
+		$this->db->where('matricule', (int) $matricule);
+		return $this->db->update($this->table);
+	}
+
+	public function update($matricule, $nom, $prenoms, $poste, $email, $code_d_acces, $actif){
+		if ($actif != 1 && $actif != 0){
+			return false;
+		}
+
+		$this->db->set('nom', $nom);
+		$this->db->set('prenoms', $prenoms);
+		$this->db->set('poste', $poste);
+		$this->db->set('email', $email);
+		$this->db->set('code_d_acces', $code_d_acces);
+		$this->db->set('active', $actif);
+		$this->db->set('date_mise_a_jour', 'NOW()', false);
+		$this->db->where('matricule', (int) $matricule);
+		return $this->db->update($this->table);
 	}
 }

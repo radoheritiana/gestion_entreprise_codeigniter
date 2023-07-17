@@ -1,3 +1,12 @@
+:root {
+	--primary-color : #A78555;
+	--primary-color-variant: #dab680;
+	--secondary-color: #FAE5DE;
+	--black-color: #151313;
+	--black-color-variant: #282626;
+	--white-color: #e3dcdc;
+}
+
 * {
 	margin: 0;
 	padding: 0;
@@ -5,7 +14,10 @@
 }
 
 body {
+	font-family: "Segoe UI", sans-serif;
+	color: var(--black-color);
 	max-height: 100vh;
+	background-color: var(--secondary-color);
 }
 
 /* navbar */
@@ -14,7 +26,7 @@ nav {
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	background-color: #939393;
+	background-color: var(--primary-color);
 }
 
 nav ul {
@@ -31,42 +43,120 @@ nav ul li {
 
 nav ul li a {
 	text-decoration: none;
-	color: #1c1b1b;
+	color: var(--black-color);
 }
 
 nav ul li:hover {
-	background-color: #c2c2c2;
+	background-color: var(--primary-color-variant);
 }
 
 nav ul li:hover a {
-	color: #2f2f2f;
+	color: var(--white-color);
 }
 
 nav h3 a {
 	text-decoration: none;
-	color: #1c1b1b;
+	color: var(--black-color);
 	font-size: 28px;
 }
 
 nav h3 a:hover {
-	color: #2f2f2f;
+	color: var(--white-color);
 }
 
 /* navbar end */
 /* container */
 main {
-	padding: 30px;
-	max-height: 80vh;
+	padding: 60px;
+}
+.center {
+	width: 40vh;
+	border-radius: 50%;
+	margin: 0 auto;
+}
+.text-center{
+	text-align: center;
+}
+input {
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 14px;
+}
+input[type=checkbox]{
+	width: 20%;
 }
 
+button {
+	width: 100%;
+	padding: 10px;
+	border: none;
+	color: var(--white-color);
+	background-color: #4e4a4a;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: #544b4b;
+}
+.d-flex {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+table {
+	width: 100%;
+	margin-top: 15px;
+}
+
+table tr th{
+	background-color: var(--primary-color);
+	padding: 10px;
+	color: var(--white-color);
+}
+
+table tr td {
+	border-bottom: 1px solid var(--black-color);
+	padding: 10px;
+}
+
+table tr td a {
+	text-decoration: none;
+	margin: 5px;
+	margin: 5px;
+	color: darkblue;
+}
+table tr td a:hover {
+	color: blue;
+	text-decoration: underline;
+}
+.form {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.alert {
+	padding: 10px;
+	border-radius: 5px;
+	margin: 5px;
+	text-align: center;
+}
+
+.alert-danger {
+	color: darkred;
+	background-color: #ff9898;
+}
+.alert-success {
+	color: var(--white-color);
+	background-color: #385738;
+}
 /* footer */
 footer {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	margin-top: 30px;
 	width: 100%;
 	text-align: center;
-	padding: 30px;
-	background-color: #c2c2c2;
+	padding: 20px;
 }

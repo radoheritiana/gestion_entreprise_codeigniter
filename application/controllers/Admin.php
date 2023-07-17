@@ -20,12 +20,269 @@ class Admin extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('admin/index');
+		if ($this->session->userdata('admin') == null){
+			$this->session->set_flashdata('error', 'Vous devez d\'abord vous connecter!');
+			redirect(base_url() . "admin/connexion");
+		}
+
+		$employes = $this->Employe_model->findAllActif();
+		$data['employes'] = $employes;
+
+		$this->load->view('partials/admin-header');
+		$this->load->view('admin/index', $data);
+		$this->load->view('partials/footer');
+	}
+
+	public function ajouter_employe(){
+		if ($this->session->userdata('admin') == null){
+			$this->session->set_flashdata('error', 'Vous devez d\'abord vous connecter!');
+			redirect(base_url() . "admin/connexion");
+		}
+
+		$this->form_validation->set_error_delimiters('<div class="alert alert-danger">','</div>');
+
+		$this->form_validation->set_rules(
+			'nom',
+			'Nom',
+			'required|trim|min_length[4]|max_length[255]'
+		);
+		$this->form_validation->set_rules(
+			'prenoms',
+			'Prénoms',
+			'required|trim|min_length[4]|max_length[255]'
+		);
+		$this->form_validation->set_rules(
+			'poste',
+			'Poste',
+			'required|trim|max_length[255]'
+		);
+		$this->form_validation->set_rules(
+			'email',
+			'Email',
+			'required|valid_email|trim|max_length[255]'
+		);
+
+		if ($this->form_validation->run()) {
+			$matricule = $this->input->post('matricule');
+			$nom = $this->input->post('nom');
+			$prenoms = $this->input->post('prenoms');
+			$poste = $this->input->post('poste');
+			$email = $this->input->post('email');
+			$code_d_acces = $this->input->post('code_d_acces');
+
+			//on verifie si le matricule existe déjà
+			$res = $this->Employe_model->findByMatricule($matricule);
+
+			if(isset($res ) && count($res) > 0) {
+				$this->session->set_flashdata('error', 'Le Matricule existe déjà!');
+			} else {
+				// on verifie si l'email existe déjà
+				$res = $this->Employe_model->findByEmail($email);
+				if(isset($res) && count($res) > 0) {
+					$this->session->set_flashdata('error', 'L\'email existe déjà!');
+				} else {
+					$is_saved = $this->Employe_model->create($matricule, $nom, $prenoms, $poste, $email, $code_d_acces);
+					if($is_saved){
+						$this->session->set_flashdata('success', 'Inscription reussi, veuillez vous connecter!');
+						redirect(base_url() . 'admin');
+					}else{
+						$this->session->set_flashdata('error', 'Une erreur s\'est produite!');
+					}
+				}
+			}
+		}
+
+		// on génére un code d'accés pour l'employé
+		$random_code = generate_code(15);
+		$matricule = $this->Employe_model->findLatestMatricule();
+		$data['code_d_acces'] = $random_code;
+		$data['matricule'] = format_matricule($matricule['matricule']);
+
+		$this->load->view('partials/admin-header');
+		$this->load->view('admin/ajouter', $data);
+		$this->load->view('partials/footer');
+	}
+
+	public function modifier($matricule){
+		if ($this->session->userdata('admin') == null){
+			$this->session->set_flashdata('error', 'Vous devez d\'abord vous connecter!');
+			redirect(base_url() . "admin/connexion");
+		}
+
+		if (!$matricule){
+			show_404();
+		}
+
+		$result = $this->Employe_model->findByMatricule($matricule);
+		if (!$result){
+			show_404();
+		}
+
+		$this->form_validation->set_error_delimiters('<div class="alert alert-danger">','</div>');
+
+		$this->form_validation->set_rules(
+			'nom',
+			'Nom',
+			'required|trim|min_length[4]|max_length[255]'
+		);
+		$this->form_validation->set_rules(
+			'prenoms',
+			'Prénoms',
+			'required|trim|min_length[4]|max_length[255]'
+		);
+		$this->form_validation->set_rules(
+			'poste',
+			'Poste',
+			'required|trim|max_length[255]'
+		);
+		$this->form_validation->set_rules(
+			'email',
+			'Email',
+			'required|valid_email|trim|max_length[255]'
+		);
+
+		if ($this->form_validation->run()) {
+			$matricule = $this->input->post('matricule');
+			$nom = $this->input->post('nom');
+			$prenoms = $this->input->post('prenoms');
+			$poste = $this->input->post('poste');
+			$email = $this->input->post('email');
+			$code_d_acces = $this->input->post('code_d_acces');
+			$status = $this->input->post('actif');
+			$actif = 0;
+			if (isset($status) && $status == 'on'){
+				$actif = 1;
+			}
+
+			$is_updated = $this->Employe_model->update($matricule, $nom, $prenoms, $poste, $email, $code_d_acces, $actif);
+
+			if($is_updated){
+				$this->session->set_flashdata('success', 'Employé modifié avec success!');
+				redirect(base_url() . 'admin');
+			}else{
+				$this->session->set_flashdata('error', 'Une erreur s\'est produite!');
+			}
+		}
+
+
+		$data['employe'] = $result;
+
+		$this->load->view('partials/admin-header');
+		$this->load->view('admin/modifier', $data);
+		$this->load->view('partials/footer');
+	}
+
+	public function employe_inactif()
+	{
+		if ($this->session->userdata('admin') == null){
+			$this->session->set_flashdata('error', 'Vous devez d\'abord vous connecter!');
+			redirect(base_url() . "admin/connexion");
+		}
+
+		$employes = $this->Employe_model->findAllNotActif();
+		$data['employes'] = $employes;
+
+		$this->load->view('partials/admin-header');
+		$this->load->view('admin/employe-inactif', $data);
+		$this->load->view('partials/footer');
+	}
+
+	public function supprimer($matricule = null)
+	{
+		if ($this->session->userdata('admin') == null){
+			$this->session->set_flashdata('error', 'Vous devez d\'abord vous connecter!');
+			redirect(base_url() . "admin/connexion");
+		}
+
+		if (!$matricule){
+			show_404();
+		}
+
+		$result = $this->Employe_model->findByMatricule($matricule);
+		if (!$result){
+			show_404();
+		}
+
+		$is_updated = $this->Employe_model->updateStatus($matricule, 0);
+		if ($is_updated) {
+			$this->session->set_flashdata('success', "L'employé a été modifié avec success!");
+		}else{
+			$this->session->set_flashdata('error', "Une erreur est survenue!");
+		}
+		redirect(base_url() . "admin");
+	}
+
+	public function activer($matricule = null)
+	{
+		if ($this->session->userdata('admin') == null){
+			$this->session->set_flashdata('error', 'Vous devez d\'abord vous connecter!');
+			redirect(base_url() . "admin/connexion");
+		}
+
+		if (!$matricule){
+			show_404();
+		}
+
+		$result = $this->Employe_model->findByMatricule($matricule);
+		if (!$result){
+			show_404();
+		}
+
+		$is_updated = $this->Employe_model->updateStatus($matricule, 1);
+		if ($is_updated) {
+			$this->session->set_flashdata('success', "L'employé a été modifié avec success!");
+		}else{
+			$this->session->set_flashdata('error', "Une erreur est survenue!");
+		}
+		redirect(base_url() . "admin/employe_inactif");
 	}
 
 	public function connexion()
 	{
+		if ($this->session->userdata('admin') !== null){
+			$this->session->set_flashdata('success', "Vous êtes déjà connectés!");
+			redirect(base_url() . "admin");
+		}
+
+		$this->form_validation->set_error_delimiters("<div class='alert alert-danger'>", "</div>");
+		$this->form_validation->set_rules(
+			'email',
+			'Email',
+			'required|trim|valid_email'
+		);
+		$this->form_validation->set_rules(
+			'mot_de_passe',
+			'Mot de passe',
+			'required|trim'
+		);
+
+		if($this->form_validation->run()){
+			$email = $this->input->post('email');
+			$mot_de_passe = $this->input->post('mot_de_passe');
+			$admin = $this->Admin_model->findByEmail($email);
+			// on verifie si l'email existe
+			if ($admin){
+				//on verifie si le mot de passe correspond
+				if (password_verify($mot_de_passe, $admin->getMot_de_passe())){
+					$this->session->set_userdata('admin', $admin);
+					redirect(base_url() . "admin");
+				} else {
+					$this->session->set_flashdata('error', "Identifiant invalide!");
+				}
+			} else {
+				$this->session->set_flashdata('error', "Identifiant invalide!");
+			}
+		}
+
+		$this->load->view('partials/admin-header');
 		$this->load->view('admin/connexion');
+		$this->load->view('partials/footer');
+	}
+
+	public function deconnexion()
+	{
+		$this->session->sess_destroy();
+		redirect(base_url() . "admin/connexion");
 	}
 
 }

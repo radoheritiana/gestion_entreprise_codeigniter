@@ -23,7 +23,7 @@ class Employe extends CI_Controller {
 		// si l'utilisateur n'est pas connecté
 		if($this->session->userdata('user') == null){
 			$this->session->set_flashdata('error', 'Veuillez vous connecter!');
-			header("Location: " . base_url() . "employe/connexion");
+			redirect(base_url() . "employe/connexion");
 		}
 
 		$this->load->view("partials/header");
@@ -36,7 +36,7 @@ class Employe extends CI_Controller {
 		// si l'utilisateur est déjà connecté
 		if($this->session->userdata('user') !== null){
 			$this->session->set_flashdata('success', 'Vous êtes déjà connecté!');
-			header("Location: " . base_url());
+			redirect(base_url());
 		}
 
 		$this->form_validation->set_error_delimiters('<div class="alert alert-danger">','</div>');
@@ -61,9 +61,9 @@ class Employe extends CI_Controller {
 				//on verifie si le code est incorrect et que l'utilisateur a un statut active
 				if($code_d_acces == $res['code_d_acces'] && $res['active'] == 1){
 					$this->session->set_userdata('user', $res);
-					header("Location: " . base_url() . "employe");
+					redirect(base_url() . "employe");
 				} else {
-					$this->session->set_flashdata('error', 'Identifiant invalide!');
+					$this->session->set_flashdata('error', 'Identifiant invalide ou compte inactif!');
 				}
 			}else{
 				$this->session->set_flashdata('error', 'Identifiant invalide!');
@@ -80,7 +80,7 @@ class Employe extends CI_Controller {
 		// si l'utilisateur est déjà connecté
 		if($this->session->userdata('user') !== null){
 			$this->session->set_flashdata('success', 'Vous êtes déjà connecté!');
-			header("Location: " . base_url());
+			redirect(base_url());
 		}
 
 		$this->form_validation->set_error_delimiters('<div class="alert alert-danger">','</div>');
@@ -128,7 +128,7 @@ class Employe extends CI_Controller {
 					$is_saved = $this->Employe_model->create($matricule, $nom, $prenoms, $poste, $email, $code_d_acces);
 					if($is_saved){
 						$this->session->set_flashdata('success', 'Inscription reussi, veuillez vous connecter!');
-						header('Location: ' . base_url() . 'employe/connexion');
+						redirect(base_url() . 'employe/connexion');
 					}else{
 						$this->session->set_flashdata('error', 'Une erreur s\'est produite!');
 					}
