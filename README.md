@@ -5,7 +5,8 @@
 * MySQL
 
 ## Installation
-* Importer le fichier gestion_entreprise_db.sql dans le SGBD MySQL
+* créer une base de données dans le SGBD MySQL : nom "gestion_entreprise_db"
+* Importer dans cette nouvelle base de données le fichier gestion_entreprise_db.sql dans le SGBD MySQL
 * Copier le dossier gestion_entreprise_codeigniter dans le dossier htdocs (pour XAMPP) ou www pour wampserver
 * modifier dans application/config/config.php la base_url selon le port de votre serveur apache
 ```php
