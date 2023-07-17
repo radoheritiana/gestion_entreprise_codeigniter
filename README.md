@@ -14,7 +14,18 @@
 $config['base_url'] = 'http://localhost:8080/gestion_entreprise_codeigniter/';
 ```
 * vous pouvez aussi utiliser des virtuals hosts mais il faut bien modifier aussi la base_url
-
+* Modifer les configuration dans application/config/database.php
+```php
+$db['default'] = array(
+	'dsn'	=> '',
+	'hostname' => 'localhost', # a changer selon votre connexion
+	'username' => 'root', # a changer selon votre connexion
+	'password' => '', # a changer selon votre connexion
+	'database' => 'gestion_entreprise_db', # a changer si le nom de la base de données cha ge
+	'dbdriver' => 'mysqli',
+	....
+];
+```
 
 ## les liens principales (en fonction du base_url)
 * pour les employés
