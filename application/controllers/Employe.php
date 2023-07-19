@@ -3,6 +3,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Employe extends CI_Controller {
 
+	function  __construct(){
+		parent::__construct();
+	}
+
 	/**
 	 * Index Page for this controller.
 	 *
@@ -26,7 +30,9 @@ class Employe extends CI_Controller {
 			redirect(base_url() . "employe/connexion");
 		}
 
-		$this->load->view("partials/header");
+		$header['title'] = "Accueil employé";
+
+		$this->load->view("partials/header", $header);
 		$this->load->view('index');
 		$this->load->view("partials/footer");
 	}
@@ -70,7 +76,9 @@ class Employe extends CI_Controller {
 			}
 		}
 
-		$this->load->view("partials/header");
+		$header['title'] = "Connexion employé";
+
+		$this->load->view("partials/header", $header);
 		$this->load->view('employe/connexion');
 		$this->load->view("partials/footer");
 	}
@@ -128,6 +136,22 @@ class Employe extends CI_Controller {
 					$is_saved = $this->Employe_model->create($matricule, $nom, $prenoms, $poste, $email, $code_d_acces);
 					if($is_saved){
 						$this->session->set_flashdata('success', 'Inscription reussi, veuillez vous connecter!');
+
+						// on envoie un email de confirmation à l'utilisateur
+						$this->load->library('email');
+						$this->load->config('email');
+
+						$this->email->from('mon.entreprise@email.com', 'Mon entreprise');
+						$this->email->to($email);
+						//$this->email->cc('another@another-example.com');
+						//$this->email->bcc('them@their-example.com');
+
+						$this->email->subject('Inscription reussi!');
+						$this->email->message('Felicitations! \n Votre compte a été crée avec success!');
+
+						$this->email->send();
+
+						// on se redirige vers la page de connexion
 						redirect(base_url() . 'employe/connexion');
 					}else{
 						$this->session->set_flashdata('error', 'Une erreur s\'est produite!');
@@ -142,7 +166,9 @@ class Employe extends CI_Controller {
 		$data['code_d_acces'] = $random_code;
 		$data['matricule'] = format_matricule($matricule['matricule']);
 
-		$this->load->view("partials/header");
+		$header['title'] = "Inscription employé";
+
+		$this->load->view("partials/header", $header);
 		$this->load->view('employe/inscription', $data);
 		$this->load->view("partials/footer");
 	}

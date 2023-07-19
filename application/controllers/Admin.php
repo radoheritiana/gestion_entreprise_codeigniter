@@ -28,7 +28,9 @@ class Admin extends CI_Controller {
 		$employes = $this->Employe_model->findAllActif();
 		$data['employes'] = $employes;
 
-		$this->load->view('partials/admin-header');
+		$header['title'] = "Accueil Administrateur";
+
+		$this->load->view('partials/admin-header', $header);
 		$this->load->view('admin/index', $data);
 		$this->load->view('partials/footer');
 	}
@@ -84,6 +86,18 @@ class Admin extends CI_Controller {
 					$is_saved = $this->Employe_model->create($matricule, $nom, $prenoms, $poste, $email, $code_d_acces);
 					if($is_saved){
 						$this->session->set_flashdata('success', 'Inscription reussi, veuillez vous connecter!');
+
+						// on envoie un email de confirmation à l'utilisateur
+						$this->load->library('email');
+						$this->load->config('email');
+
+						$this->email->from('mon.entreprise@email.com', 'Mon entreprise');
+						$this->email->to($email);
+						$this->email->subject('Inscription reussi!');
+						$this->email->message('Felicitations! \n Votre compte a été crée avec success!');
+
+						$this->email->send();
+						//on se redirige vers la liste des employés actifs
 						redirect(base_url() . 'admin');
 					}else{
 						$this->session->set_flashdata('error', 'Une erreur s\'est produite!');
@@ -98,7 +112,9 @@ class Admin extends CI_Controller {
 		$data['code_d_acces'] = $random_code;
 		$data['matricule'] = format_matricule($matricule['matricule']);
 
-		$this->load->view('partials/admin-header');
+		$header['title'] = "Ajouter employé";
+
+		$this->load->view('partials/admin-header', $header);
 		$this->load->view('admin/ajouter', $data);
 		$this->load->view('partials/footer');
 	}
@@ -167,7 +183,9 @@ class Admin extends CI_Controller {
 
 		$data['employe'] = $result;
 
-		$this->load->view('partials/admin-header');
+		$header['title'] = "Modifier employé $matricule";
+
+		$this->load->view('partials/admin-header', $header);
 		$this->load->view('admin/modifier', $data);
 		$this->load->view('partials/footer');
 	}
@@ -182,7 +200,9 @@ class Admin extends CI_Controller {
 		$employes = $this->Employe_model->findAllNotActif();
 		$data['employes'] = $employes;
 
-		$this->load->view('partials/admin-header');
+		$header['title'] = "Employé inactifs";
+
+		$this->load->view('partials/admin-header', $header);
 		$this->load->view('admin/employe-inactif', $data);
 		$this->load->view('partials/footer');
 	}
@@ -274,7 +294,9 @@ class Admin extends CI_Controller {
 			}
 		}
 
-		$this->load->view('partials/admin-header');
+		$header['title'] = "Connexion Administrateur";
+
+		$this->load->view('partials/admin-header', $header);
 		$this->load->view('admin/connexion');
 		$this->load->view('partials/footer');
 	}

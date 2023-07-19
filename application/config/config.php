@@ -521,3 +521,12 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+
+//email
+$config['protocol'] = 'smtp';
+$config['smtp_host'] = 'localhost';
+$config['smtp_port'] = 1025;
+$config['smtp_user'] = '';
+$config['smtp_pass'] = '';
+$config['crlf'] = "\r\n";
+$config['newline'] = "\r\n";
